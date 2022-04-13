@@ -28,6 +28,19 @@ class App extends Component {
         })
     }
 
+    addItem = (name, salary) => {
+        this.setState(({data}) => {
+            return {
+                data: [...data, {
+                    name,
+                    salary,
+                    increase: false,
+                    id: data.map(item => item.id).reduce((acc, item) => (acc < item ? (acc = item) : acc)) + 1
+                }]
+            }
+        })
+    }
+
     render() {
         return (
             <div className="app">
@@ -41,7 +54,8 @@ class App extends Component {
                 <EmployeesList
                     data={this.state.data}
                     onDelete={this.deleteItem}/>
-                <EmployeesAddForm/>
+                <EmployeesAddForm
+                    onAdd={this.addItem}/>
             </div>
         );
     }
