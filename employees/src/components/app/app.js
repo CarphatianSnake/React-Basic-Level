@@ -16,7 +16,7 @@ class App extends Component {
         {name: 'Dmytro M.', salary: 5000, increase: true, rise: false, id: 3}
       ],
       term: '',
-      action: 'all'
+      filter: 'all'
     }
   }
 
@@ -57,19 +57,24 @@ class App extends Component {
     }))
   }
 
-  searchEmp = (items, term) => {
-    const action = this.state.action;
-    const filteredItems = items.filter(item => {
-      if (action === 'toPromotion' && item.rise) return item
-      if (action === 'salaryOver1000' && item.salary > 1000) return item
-      if (action === 'all') return item
-      return null;
-    })
-
-    if (term.length === 0) {
-      return filteredItems;
+  appFilter = (items, filter) => {
+    switch (filter) {
+      case 'toPromotion':
+        return items.filter(item => item.rise);
+      case 'salaryOver1000':
+        return items.filter(item => item.salary > 1000);
+      case 'premium': 
+        return items.filter(item => item.increase);
+      default:
+        return items;
     }
-    return filteredItems.filter(item => {
+  }
+
+  searchEmp = (items, term) => {
+    if (term.length === 0) {
+      return items;
+    }
+    return items.filter(item => {
       return item.name.toLowerCase().indexOf(term) > -1
     })
   }
@@ -80,17 +85,17 @@ class App extends Component {
     })
   }
 
-  onFilter = (action) => {
+  onFilter = (filter) => {
     this.setState({
-      action: action
+      filter: filter
     })
   }
 
   render() {
-    const {data, term} = this.state;
+    const {data, term, filter} = this.state;
     const employees = this.state.data.length,
           increased = this.state.data.filter(item => item.increase).length;
-    const visibleData = this.searchEmp(data, term);
+    const visibleData = this.appFilter(this.searchEmp(data, term), filter);
     return (
       <div className="app">
         <AppInfo
@@ -104,6 +109,7 @@ class App extends Component {
           />
           <AppFilter
               onFilter={this.onFilter}
+              filter={filter}
           />
         </div>
   
